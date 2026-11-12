@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azureaicommunity-agent-tool-limit"
+version = "0.1.0"
+description = "Global and per-tool call limit enforcement middleware for AI agent pipelines"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Vinoth Rajendran", email = "r.vinoth@live.com" }]
+keywords = ["ai", "tools", "limit", "middleware", "llm", "agent", "azure", "azure-ai", "community"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "agent-framework",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[project.urls]
+Homepage = "https://github.com/Azure-AI-Community/python-Agent-middleware"
+Repository = "https://github.com/Azure-AI-Community/python-Agent-middleware"
+Issues = "https://github.com/Azure-AI-Community/python-Agent-middleware/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tool_limit_middleware*"]
