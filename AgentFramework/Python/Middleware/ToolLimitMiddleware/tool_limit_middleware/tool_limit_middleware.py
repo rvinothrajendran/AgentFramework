@@ -145,13 +145,19 @@ class ToolLimitMiddleware(ChatMiddleware):
             return
 
         blocked: set[str] = set()
-        for _message, content in self._iter_function_calls(result):
+        for message, content in self._iter_function_calls(result):
             tool_name = getattr(content, "name", None) or "unknown"
             if not self._enforce(tool_name):
+                message.contents[:] = [
+                    item for item in message.contents if item is not content
+                ]
                 blocked.add(tool_name)
 
         if blocked:
-            self._remove_blocked_calls(result, blocked)
+            result.messages[:] = [
+                message for message in result.messages
+                if getattr(message, "contents", None)
+            ]
             await self._fire_exceeded_callback(blocked)
 
     async def _process_streaming(
