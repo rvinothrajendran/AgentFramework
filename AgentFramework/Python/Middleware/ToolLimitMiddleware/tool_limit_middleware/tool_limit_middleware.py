@@ -163,28 +163,76 @@ class ToolLimitMiddleware(ChatMiddleware):
     async def _process_streaming(
         self, context: ChatContext, call_next: Callable[[], Awaitable[None]]
     ) -> None:
-        blocked_tools: list[str] = []
+        blocked_tools: set[str] = set()
+        call_decisions: dict[Any, bool] = {}
+        call_names: dict[Any, str] = {}
+        pending_fragments: dict[Any, list[Any]] = {}
 
         def _transform(update: Any) -> Any:
             contents = getattr(update, "contents", None)
             if not contents:
                 return update
-            to_remove = []
+
+            def _remove(content: Any) -> None:
+                for index, item in enumerate(contents):
+                    if item is content:
+                        try:
+                            del contents[index]
+                        except (AttributeError, TypeError):
+                            pass
+                        break
+
             for content in list(contents):
-                if getattr(content, "type", None) == "function_call":
-                    tool_name = getattr(content, "name", None) or "unknown"
-                    if not self._enforce(tool_name):
-                        to_remove.append(content)
-                        blocked_tools.append(tool_name)
-            for item in to_remove:
+                if getattr(content, "type", None) != "function_call":
+                    continue
+
+                call_id = getattr(content, "call_id", None)
+                if call_id is None:
+                    call_id = getattr(content, "id", None)
                 try:
-                    contents.remove(item)
-                except (ValueError, AttributeError):
-                    pass
+                    hash(call_id)
+                except TypeError:
+                    call_id = None
+
+                tool_name = getattr(content, "name", None)
+                if call_id is None:
+                    if tool_name and not self._enforce(tool_name):
+                        _remove(content)
+                        blocked_tools.add(tool_name)
+                    continue
+
+                if call_id in call_decisions:
+                    if not call_decisions[call_id]:
+                        _remove(content)
+                        blocked_tools.add(call_names[call_id])
+                    continue
+
+                if not tool_name:
+                    pending_fragments.setdefault(call_id, []).append(content)
+                    _remove(content)
+                    continue
+
+                allowed = self._enforce(tool_name)
+                call_decisions[call_id] = allowed
+                call_names[call_id] = tool_name
+                if not allowed:
+                    _remove(content)
+                    pending_fragments.pop(call_id, None)
+                    blocked_tools.add(tool_name)
+                    continue
+
+                pending = pending_fragments.pop(call_id, [])
+                for fragment in pending:
+                    index = next(
+                        (i for i, item in enumerate(contents) if item is content),
+                        len(contents),
+                    )
+                    contents.insert(index, fragment)
+
             return update
 
         async def _on_stream_done(response: Any) -> Any:
-            await self._fire_exceeded_callback(set(blocked_tools))
+            await self._fire_exceeded_callback(blocked_tools)
             return response
 
         context.stream_transform_hooks.append(_transform)
