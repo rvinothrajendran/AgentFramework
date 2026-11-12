@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azureaicommunity-agent-approval"
+version = "0.2.0"
+description = "Human-in-the-loop approval gate middleware for AI agent tool calls"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Vinoth Rajendran", email = "r.vinoth@live.com" }]
+keywords = ["ai", "approval", "middleware", "llm", "agent", "human-in-the-loop", "azure", "azure-ai", "community"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "agent-framework",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+]
+
+[project.urls]
+Homepage = "https://github.com/Azure-AI-Community/python-Agent-middleware"
+Repository = "https://github.com/Azure-AI-Community/python-Agent-middleware"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["approval_middleware*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

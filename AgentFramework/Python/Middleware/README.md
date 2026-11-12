@@ -20,11 +20,26 @@ This folder contains middleware packages that extend `agent-framework` pipelines
 
 | Package | PyPI | Downloads | Description | Docs |
 |---|---|---|---|---|
+| `azureaicommunity-agent-approval` | [![PyPI](https://img.shields.io/pypi/v/azureaicommunity-agent-approval)](https://pypi.org/project/azureaicommunity-agent-approval/) | ![Downloads](https://static.pepy.tech/badge/azureaicommunity-agent-approval) | Human-in-the-loop approval gate — intercepts specific tool calls and requires user confirmation before execution | [README →](ApprovalMiddleware/README.md) |
 | `azureaicommunity-agent-language-middleware` | [![PyPI](https://img.shields.io/pypi/v/azureaicommunity-agent-language-middleware)](https://pypi.org/project/azureaicommunity-agent-language-middleware/) | ![Downloads](https://static.pepy.tech/badge/azureaicommunity-agent-language-middleware) | Automatic language detection, translation, and back-translation for multi-lingual agent interactions | [README →](AzureLanguage/language_middleware/README.md) |
 | `azureaicommunity-agent-pii-middleware` | [![PyPI](https://img.shields.io/pypi/v/azureaicommunity-agent-pii-middleware)](https://pypi.org/project/azureaicommunity-agent-pii-middleware/) | ![Downloads](https://static.pepy.tech/badge/azureaicommunity-agent-pii-middleware) | PII detection and blocking before sensitive data reaches the LLM | [README →](pii_middleware/README.md) |
 | `azureaicommunity-agent-token-guard` | [![PyPI](https://img.shields.io/pypi/v/azureaicommunity-agent-token-guard)](https://pypi.org/project/azureaicommunity-agent-token-guard/) | ![Downloads](https://static.pepy.tech/badge/azureaicommunity-agent-token-guard) | Token usage tracking and quota enforcement per user, per period | [README →](AgentTokenGuard/README.md) |
 | `agentaicommunity-agent-context-compression` | [![PyPI](https://img.shields.io/pypi/v/agentaicommunity-agent-context-compression)](https://pypi.org/project/agentaicommunity-agent-context-compression/) | ![Downloads](https://static.pepy.tech/badge/agentaicommunity-agent-context-compression) | Automatic conversation history compression when token count approaches the context-window limit | [README →](ContextCompression/README.md) |
 | `agentaicommunity-agent-youtube-middleware` | [![PyPI](https://img.shields.io/pypi/v/agentaicommunity-agent-youtube-middleware)](https://pypi.org/project/agentaicommunity-agent-youtube-middleware/) | ![Downloads](https://static.pepy.tech/badge/agentaicommunity-agent-youtube-middleware) | YouTube video search tools for AI agent pipelines using the YouTube Data API v3 | [README →](YouTubeMiddleware/README.md) |
+
+---
+
+## 🔐 Approval Middleware
+
+Add a **human-in-the-loop approval gate** to any tool call in your agent pipeline. You specify which tools require confirmation — all other tools run freely without interruption. Before a gated tool executes, your callback is invoked; return `True` to approve or `False`/`None` to deny. When denied, a descriptive message is returned to the LLM so it can reason about the refusal.
+
+- Selective gating — only listed tools are intercepted; others execute freely
+- Sync or async approval callbacks — console, GUI, HTTP, webhooks — any UI
+- LLM-aware denial message set as the tool result on refusal
+- Mirrors the C# `ApprovalMiddleware` in the AzureAICommunity Agent Framework
+
+📦 `pip install azureaicommunity-agent-approval`  
+📖 [Full documentation](ApprovalMiddleware/README.md)
 
 ---
 
